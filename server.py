@@ -1,9 +1,15 @@
-from fastapi import fastapi, WebSocket
+from fastapi import FastAPI, WebSocket
 from starlette.endpoints import WebSocketEndpoint
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 import os, importlib, sys, json
 
 app = FastAPI()
+
+app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
+@app.get("/")
+async def showFrontend():
+  return FileResponse('frontend/index.html')
 
 players_dir = os.path.join("players")
 player_file_name = "player"
@@ -31,7 +37,7 @@ def loadPlayer(folderName):
   return player
 
 def sendError(e):
-  return e[1]
+  return str(e[1])
 
 def retrievePlayerDetails(player):
   details = {
@@ -52,6 +58,7 @@ def retrievePlayerDetails(player):
       details["err"] = sendError(sys.exc_info())
   else:
     details["err"] = sendError(player["err"])
+  return details
 
 def initPlayer(folderName):
   global players
@@ -107,20 +114,22 @@ class PlayerWSEndpoint(WebSocketEndpoint):
         "data": ""
       })
       try:
-        path, search_tree = self.player.run(self.problem)
+        path, search_tree = self.player["player"].run(self.problem)
       except:
         await websocket.send_json({
           "err": True,
           "purpose": "notification",
-          "data": [
-            "error when executing algorithm",
-            sendError(sys.exc_info())
-          ]
+          "data": "error when executing algorithm"
+        })
+        await websocket.send_json({
+          "err": True,
+          "purpose": "notification",
+          "data": sendError(sys.exc_info())
         })
       else:
         await websocket.send_json({
           "err": False,
-          "purpose": "path",
+          "purpose": "terminated",
           "data": {
             "path": path,
             "search_tree": search_tree

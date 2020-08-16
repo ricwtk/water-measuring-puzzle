@@ -3,7 +3,7 @@ import random
 class Player():
   name = "testing player"
   group = "Children of Odin"
-  icon = "mdi-close"
+  icon = "mdi-cloud"
   members = [
     ["Thor", "12834823"],
     ["Loki", "98854678"],
@@ -16,10 +16,11 @@ class Player():
 
   def run(self, problem):
     # problem = {
-    #   size: [],
-    #   filled: [],
-    #   source: True,
-    #   sink: True
+    #   size: [int],
+    #   filled: [int],
+    #   source: bool,
+    #   sink: bool,
+    #   target: int
     # }
     path = []
     path.append([ f for f in problem["filled"] ])

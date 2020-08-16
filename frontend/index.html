@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="icon" href="./frontend/icon.png" type="image/x-icon" />
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/5.0.45/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="./frontend/index.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <title>AI Assignment 1 (202008)</title>
+    <style>
+      .search-tree-dialog { height: 90%; }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <v-app>
+        <v-main>
+          <v-container fill-height class="align-stretch">
+            <v-row no-gutters>
+              <v-col class="pr-5">
+                <v-card elevation="3" style="height:100%" class="d-flex flex-column">
+                  <v-card-title>{{ name.main }}<v-spacer></v-spacer><v-btn tile icon><v-icon>mdi-cog-box</v-icon></v-btn></v-card-title>
+                  <v-card-text class="flex-grow-1 overflow-auto d-flex flex-column" style="height:0pt">
+                    <v-combobox class="flex-grow-0" label="Player" :items="player_list" v-model="player" :rules="[checkSelectedPlayer]">
+                      <template v-slot:prepend>
+                        <v-btn icon tile title="click for player profile"><v-icon>{{ player_icon_display }}</v-icon></v-btn>
+                      </template>
+                      <template v-slot:append-outer>
+                        <v-btn outlined @click="runPlayer" :disabled="player.value == ''">run</v-btn>
+                      </template>
+                      <template v-slot:item="{ index, item }">
+                        <v-icon class="pr-3">{{ item.text == "" ? default_val.player_icon : item.icon }}</v-icon>{{ item.text }}
+                      </template>
+                    </v-combobox>
+                    <v-row>
+                      <svg style="width:100%;height:100%"></svg>
+                    </v-row>
+                    <v-slider class="px-2 flex-grow-0" hide-details></v-slider>
+                    <v-row class="flex-grow-0 align-center" no-gutters>
+                      <v-col class="text-center">
+                        <template v-for="p,i in result.path">
+                          <v-chip :key="`path-${i}`" class="mx-2 my-1">{{ p.join(" &middot ") }}</v-chip>
+                          <template v-if="i < result.path.length-1">&rarr;</template>
+                        </template>
+                      </v-col>
+                      <v-col cols="auto"><v-btn icon tile v-if="result.search_tree.length > 0"><v-icon>mdi-graph-outline</v-icon></v-btn></v-col>
+                    </v-row>
+                    <!-- <svg style="width:100%;height:100%" :view-box.camel="maze_view_box">
+                      <rect :x="m_unit-0.5" :y="m_unit-0.5" :width="maze.n_col*m_unit+1" :height="maze.n_row*m_unit+1" fill="grey" fill-opacity="0.2" stroke="black" />
+                      <rect v-if="maze.entrance.length>0 && maze.entrance[0]<maze.n_col && maze.entrance[1]<maze.n_row" :x="get_x_left(maze.entrance[0])" v-if="maze.entrance[0]<maze.n_col && maze.entrance[1]<maze.n_row" :y="get_y_top(maze.entrance[1])" :width="m_unit" :height="m_unit" fill="red" />
+                      <rect v-for="e,i in maze.exits" :key="'exit'+i" v-if="e[0]<maze.n_col && e[1]<maze.n_row" :x="get_x_left(e[0])" :y="get_y_top(e[1])" :width="m_unit" :height="m_unit" fill="green" />
+                      <rect v-for="b,i in maze.borders.bottom" :key="'bot'+i" v-if="b[0]<maze.n_col && b[1]<maze.n_row" :x="get_x_left(b[0])-1" :y="get_y_bot(b[1])" :width="m_unit+2" height="2" />
+                      <rect v-for="r,i in maze.borders.right" :key="'rig'+i" v-if="r[0]<maze.n_col-1 && r[1]<maze.n_row" :x="get_x_right(r[0])" :y="get_y_top(r[1])-1" width="2" :height="m_unit+2" />
+                      <image :x="get_x_left(player_coord[0])+1" :y="get_y_top(player_coord[1])+1" :href="`https://cdn.jsdelivr.net/npm/@mdi/svg@5.x/svg/${player.icon.slice(4)}.svg`" :height="m_unit-2" :width="m_unit-2"></image>
+                      <path v-if="solution.found" :d="solution_path" fill="transparent" stroke="teal" :stroke-width=".1*m_unit" />
+                      <text v-for="c in maze.n_col" :key="'col-label-'+c"
+                        :x="get_x_center(c-1)"
+                        :y="get_y_center(-1)"
+                        dominant-baseline="middle" text-anchor="middle"
+                      >{{ c-1 }}</text>
+                      <text v-for="r in maze.n_row" :key="'row-label-'+r"
+                        :x="get_x_center(-1)"
+                        :y="get_y_center(r-1)"
+                        dominant-baseline="middle" text-anchor="middle"
+                      >{{ r-1 }}</text>
+                    </svg> -->
+                  </v-card-text>
+                  <!-- <v-card-actions class="d-flex flex-column">
+                    <v-row>
+                      <v-btn icon :disabled="!player_socket" @click="reset_player"><v-icon>mdi-restart</v-icon></v-btn>
+                      <v-btn icon :disabled="!player_socket || solution.found" v-if="!continuous" @click="continuous_search"><v-icon>mdi-play</v-icon></v-btn>
+                      <v-btn icon :disabled="!player_socket || solution.found" v-if="continuous" @click="stop_continuous_search"><v-icon>mdi-pause</v-icon></v-btn>
+                      <v-btn icon :disabled="!player_socket || solution.found" @click="search_next"><v-icon>mdi-skip-next</v-icon></v-btn>
+                      <v-btn icon :disabled="!player_socket" @click="show_search_tree"><v-icon>mdi-graph-outline</v-icon></v-btn>
+                    </v-row>
+                    <v-row>
+                      <v-btn title="Click to change maze" class="mx-2" tile text @click="open_maze_loading">
+                        <v-icon color="primary">mdi-map-marker-distance</v-icon>&nbsp;{{ name_of_maze }}&nbsp;<v-icon>mdi-map-outline</v-icon>
+                      </v-btn>
+                      <v-btn title="Click to change player" class="mx-2" tile text @click="open_player_loading">
+                        <v-icon color="primary">mdi-account-switch-outline</v-icon>&nbsp;{{ player.name }}&nbsp;<v-icon>{{ player.icon }}</v-icon>
+                      </v-btn>
+                    </v-row>
+                  </v-card-actions> -->
+                </v-card>
+              </v-col>
+              <v-col cols="3">
+                <v-card elevation="3" style="height:100%" class="d-flex flex-column">
+                  <v-card-title>{{ name.side }}</v-card-title>
+                  <v-card-text class="flex-grow-1 overflow-auto pt-0" style="height:0pt">
+                    <v-list dense class="pt-0">
+                      <v-divider></v-divider>
+                      <template v-for="l,i in logs">
+                        <v-list-item :key="i" :class="l.type == 'error' ? 'red' : ''" @click="showLogMsg(i)">
+                          <v-list-item-content :title="l.text">
+                            <v-list-item-title v-html="l.text" :class="l.type == 'error' ? 'white--text' : ''"></v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                        <v-divider></v-divider>
+                      </template>
+                    </v-list>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn @click="logs=[]" outlined>Clear log</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-col>
+            </v-row>
+            <v-dialog v-model="log_msg_dialog.show">
+              <v-card>
+                <v-row class="align-center py-2" no-gutters>
+                  <v-col cols="auto"><v-btn icon tile @click="log_msg_dialog.index -= 1" :disabled="log_msg_dialog.index == 0"><v-icon>mdi-chevron-left</v-icon></v-btn></v-col>
+                  <v-col class="px-2" v-if="logs.length > 0" v-html="logs[log_msg_dialog.index].text"></v-col>
+                  <v-col cols="auto"><v-btn icon tile @click="log_msg_dialog.index += 1" :disabled="log_msg_dialog.index == logs.length-1"><v-icon>mdi-chevron-right</v-icon></v-btn></v-col>
+                </v-row>
+              </v-card>
+            </v-dialog>
+            <!-- <v-dialog v-model="load_interface" scrollable :persistent="dialog.loading">
+              <v-card :loading="dialog.loading_list || dialog.loading">
+                <v-card-title>Load {{ dialog.maze ? "maze" : "player" }}</v-card-title>
+                <v-divider></v-divider>
+                <v-card-text>
+                  <v-list>
+                    <v-list-item v-if="dialog.maze" v-for="maze,i in dialog.available_mazes" :key="'mn-'+i"
+                    :class="dialog.name_to_load == maze ? 'primary' : ''"
+                    @click.stop="choose_maze(maze)">
+                      <v-list-item-avatar><v-icon :color="dialog.name_to_load == maze ? 'white' : ''">mdi-map-outline</v-icon></v-list-item-avatar>
+                      <v-list-item-content>
+                        <v-list-item-title :class="dialog.name_to_load == maze ? 'white--text' : ''">{{ maze }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item v-if="dialog.player" v-for="player,i in dialog.available_players" :key="'pn-'+i"
+                    :class="dialog.name_to_load == player.name ? 'primary' : ''"
+                    @click.stop="choose_player(player)">
+                      <v-list-item-avatar><v-icon :color="dialog.name_to_load == player.name ? 'white' : ''">{{ player.icon }}</v-icon></v-list-item-avatar>
+                      <v-list-item-content>
+                        <v-list-item-title :class="dialog.name_to_load == player.name ? 'white--text' : ''">{{ player.name }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                  <v-text-field label="Name" class="mx-4"
+                  v-model="dialog.name_to_load" 
+                  disabled></v-text-field>
+                  <v-btn color="primary" @click.stop="dialog.maze ? load_maze() : load_player()" :disabled="dialog.loading || dialog.loading_list">Load</v-btn>
+                  <v-btn @click.stop="cancel_dialog" :disabled="dialog.loading || dialog.loading_list">Cancel</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog> -->
+            <!-- <v-dialog v-model="st_dialog.show" content-class="search-tree-dialog" scrollable>
+              <v-card :loading="st_dialog.loading">
+                <v-card-title>Search tree</v-card-title>
+                <v-divider></v-divider>
+                <v-card-text>
+                  <svg :style="{ width: st_dialog.tree_width + '%' , height: st_dialog.tree_height + '%' }" :view-box.camel="search_tree_view_box" v-if="st_dialog.search_tree">
+                    <template v-for="layer,l in search_tree_array.slice(0,search_tree_array.length-1)">
+                      <template v-for="node,n in layer.flat(2)">
+                        <rect :key="'node-'+l+'-'+n" 
+                          :x="node_x[l][n]"
+                          :y="l*(st_dialog.prop.node_height+st_dialog.prop.link_height)"
+                          :width="st_dialog.prop.node_width"
+                          :height="st_dialog.prop.node_height"
+                          v-if="!(node < 1)"
+                          :stroke="node.removed ? 'red' : 'gray'"
+                          fill="none"
+                        ></rect>
+                        <text v-if="!(node < 1)" :key="'nodelabel-'+l+'-'+n"
+                          :x="node_x[l][n] + .5*st_dialog.prop.node_width"
+                          :y="l*(st_dialog.prop.node_height+st_dialog.prop.link_height) + .5*st_dialog.prop.node_height"
+                          font-weight="thin"
+                          dominant-baseline="middle" text-anchor="middle"
+                        >{{ `${node.state[0]} • ${node.state[1]}` }}</text>
+                        <line v-if="(l > 0) && !(node < 1)" :key="'link-'+l+'-'+n" 
+                          :x1="linkage[l-1][n].parent_loc+.5*st_dialog.prop.node_width"
+                          :y1="(l-1)*(st_dialog.prop.node_height+st_dialog.prop.link_height)+st_dialog.prop.node_height"
+                          :x2="linkage[l-1][n].child_loc+.5*st_dialog.prop.node_width"
+                          :y2="l*(st_dialog.prop.node_height+st_dialog.prop.link_height)"
+                          stroke="gray"
+                        />
+                        <text v-if="(l > 0) && !(node < 1)" :key="'linklabel-'+l+'-'+n"
+                          :x="(linkage[l-1][n].parent_loc+linkage[l-1][n].child_loc)/2 + .5*st_dialog.prop.node_width"
+                          :y="l*(st_dialog.prop.node_height+st_dialog.prop.link_height) - .5*st_dialog.prop.link_height"
+                          stroke="white"
+                          stroke-width=".5pt"
+                          font-weight="900"
+                          dominant-baseline="middle" text-anchor="middle"
+                        >{{ linkage[l-1][n].label }}</text>
+                      </template>
+                    </template>
+                  </svg>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                  <v-btn @click.stop="st_dialog.tree_width+=5" title="increase width"><v-icon>mdi-arrow-expand-horizontal</v-icon></v-btn>
+                  <v-btn @click.stop="st_dialog.tree_width-=5" title="decrease width"><v-icon>mdi-arrow-collapse-horizontal</v-icon></v-btn>
+                  <v-btn @click.stop="st_dialog.tree_height+=5" title="increase height"><v-icon>mdi-arrow-expand-vertical</v-icon></v-btn>
+                  <v-btn @click.stop="st_dialog.tree_height-=5" title="decrease height"><v-icon>mdi-arrow-collapse-vertical</v-icon></v-btn>
+                  <v-btn @click.stop="st_dialog.tree_width+=5;st_dialog.tree_height+=5" title="increase width and height"><v-icon>mdi-arrow-expand-all</v-icon></v-btn>
+                  <v-btn @click.stop="st_dialog.tree_width-=5;st_dialog.tree_height-=5" title="decrease width and height"><v-icon>mdi-arrow-collapse-all</v-icon></v-btn>
+                  <v-btn @click.stop="st_dialog.tree_width=100;st_dialog.tree_height=100" title="fit tree"><v-icon>mdi-arrow-all</v-icon></v-btn>
+                  <v-spacer></v-spacer>
+                  <v-btn @click.stop="st_dialog.show=false">Close</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog> -->
+          </v-container>
+        </v-main>
+      </v-app>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="./frontend/index.js"></script>
+  </body>
+</html>
