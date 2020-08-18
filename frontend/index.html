@@ -21,11 +21,11 @@
             <v-row no-gutters>
               <v-col class="pr-5">
                 <v-card elevation="3" style="height:100%" class="d-flex flex-column">
-                  <v-card-title>{{ name.main }}<v-spacer></v-spacer><v-btn tile icon><v-icon>mdi-cog-box</v-icon></v-btn></v-card-title>
+                  <v-card-title>{{ name.main }}<v-spacer></v-spacer><v-btn tile icon title="Parameters" @click="param_dialog.show = true"><v-icon>mdi-cog-box</v-icon></v-btn></v-card-title>
                   <v-card-text class="flex-grow-1 overflow-auto d-flex flex-column" style="height:0pt">
                     <v-combobox class="flex-grow-0" label="Player" :items="player_list" v-model="player" :rules="[checkSelectedPlayer]">
                       <template v-slot:prepend>
-                        <v-btn icon tile title="click for player profile"><v-icon>{{ player_icon_display }}</v-icon></v-btn>
+                        <v-btn icon tile title="Player profile"><v-icon>{{ player_icon_display }}</v-icon></v-btn>
                       </template>
                       <template v-slot:append-outer>
                         <v-btn outlined @click="runPlayer" :disabled="player.value == ''">run</v-btn>
@@ -88,7 +88,7 @@
               </v-col>
               <v-col cols="3">
                 <v-card elevation="3" style="height:100%" class="d-flex flex-column">
-                  <v-card-title>{{ name.side }}</v-card-title>
+                  <v-card-title>{{ name.side }}<v-spacer></v-spacer><v-switch v-model="log_enabler" hide-details dense inset class="mt-0 pt-0"></v-switch></v-card-title>
                   <v-card-text class="flex-grow-1 overflow-auto pt-0" style="height:0pt">
                     <v-list dense class="pt-0">
                       <v-divider></v-divider>
@@ -116,6 +116,62 @@
                   <v-col class="px-2" v-if="logs.length > 0" v-html="logs[log_msg_dialog.index].text"></v-col>
                   <v-col cols="auto"><v-btn icon tile @click="log_msg_dialog.index += 1" :disabled="log_msg_dialog.index == logs.length-1"><v-icon>mdi-chevron-right</v-icon></v-btn></v-col>
                 </v-row>
+              </v-card>
+            </v-dialog>
+            <v-dialog v-model="param_dialog.show">
+              <v-card>
+                <v-card-title>Problem parameters</v-card-title>
+                <v-divider></v-divider>
+                <v-card-text>
+                  <v-list>
+                    <v-list-item>
+                      <v-sheet width="100%">
+                        You have <v-chip label class="mx-2" :color="getColor(0)">{{ problem.size.length }}</v-chip> bucket{{ problem.size.length > 1 ? 's': '' }} of size 
+                        <template v-for="b,i in problem.size">
+                          <v-chip label :key="`bucket-size-${i}`" class="ma-2" :color="getColor(i+1)">
+                            <span class="pr-2" style="font-size: smaller;">({{ i+1 }})</span><span class="pr-2">{{ b }}</span><v-icon @click="removeBucket(i)">mdi-close</v-icon>
+                          </v-chip>
+                          {{ (i < problem.size.length - 1) ? (i == problem.size.length - 2) ? ", and" : ", " : ""  }}
+                        </template>.
+                      </v-sheet>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-text-field label="new bucket size" @keydown.enter="addNewBucket"></v-text-field>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-sheet width="100%">
+                        Initially the bucket{{ problem.size.length > 1 ? 's are': ' is' }} filled with amount of 
+                        <template v-for="f,i in problem.filled">
+                          <v-chip label :key="`bucket-filled-${i}`" class="ma-2" :color="getColor(i+1+problem.size.length)">
+                            <span class="pr-2" style="font-size: smaller;">({{ i+1 }})</span><span class="pr-2">{{ f }}</span><v-icon @click="param_dialog.editFilled=i">mdi-pencil</v-icon>
+                          </v-chip>
+                          {{ (i < problem.filled.length - 1) ? (i == problem.filled.length - 2) ? ", and" : ", " : ""  }}
+                        </template>.
+                      </v-sheet>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-text-field :label="param_dialog.editFilled < 0 ? `click filled amount to edit` : `filled amount for bucket ${param_dialog.editFilled + 1}`" @keydown.enter=""></v-text-field>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-sheet width="100%">
+                        Water source (unlimited) is 
+                        <v-chip label class="ma-2" :color="getColor(2*problem.size.length+2)">
+                          <span class="pr-2">{{ problem.source ? '' : 'not ' }} available</span>
+                          <v-icon @click="problem.source=!problem.source">{{ problem.source ? "mdi-toggle-switch" : "mdi-toggle-switch-off-outline" }}</v-icon>
+                        </v-chip>
+                      </v-sheet>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-sheet width="100%">
+                        Water sink (unlimited) is 
+                        <v-chip label class="ma-2" :color="getColor(2*problem.size.length+3)">
+                          <span class="pr-2">{{ problem.sink ? '' : 'not ' }} available</span>
+                          <v-icon @click="problem.sink=!problem.sink">{{ problem.sink ? "mdi-toggle-switch" : "mdi-toggle-switch-off-outline" }}</v-icon>
+                        </v-chip>
+                      </v-sheet>
+                    </v-list-item>
+                  </v-list>
+                </v-card-text>
               </v-card>
             </v-dialog>
             <!-- <v-dialog v-model="load_interface" scrollable :persistent="dialog.loading">

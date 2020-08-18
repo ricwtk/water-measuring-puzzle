@@ -34,6 +34,21 @@ let vm = new Vue({
     log_msg_dialog: {
       show: false,
       index: 0
+    },
+    param_dialog: {
+      show: false,
+      colors: [
+        "#fbb4ae",
+        "#b3cde3",
+        "#ccebc5",
+        "#decbe4",
+        "#fed9a6",
+        "#ffffcc",
+        "#e5d8bd",
+        "#fddaec",
+        "#f2f2f2"
+      ],
+      editFilled: -1
     }
   },
   computed: {
@@ -145,6 +160,18 @@ let vm = new Vue({
       };
     },
     addToLogs: function (l) { if (this.log_enabler) { this.logs.push(l); } },
-    showLogMsg: function (idx) { this.log_msg_dialog.index = idx; this.log_msg_dialog.show = true; }
+    showLogMsg: function (idx) { this.log_msg_dialog.index = idx; this.log_msg_dialog.show = true; },
+    getColor: function (idx) { return this.param_dialog.colors[idx%this.param_dialog.colors.length]; },
+    addNewBucket: function (ev) { 
+      if (!isNaN(ev.target.value)) {
+        this.problem.size.push(Number(ev.target.value));
+        this.problem.filled.push(0);
+      }
+      ev.target.value = "";
+    },
+    removeBucket: function (idx) { 
+      this.problem.size.splice(idx,1); 
+      this.problem.filled.splice(idx,1); 
+    },
   }
 });
