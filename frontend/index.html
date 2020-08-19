@@ -136,21 +136,28 @@
                       </v-sheet>
                     </v-list-item>
                     <v-list-item>
-                      <v-text-field label="new bucket size" @keydown.enter="addNewBucket"></v-text-field>
+                      <v-text-field v-model="param_dialog.new_bucket_size" label="new bucket size" @keydown.enter="addNewBucket"></v-text-field>
                     </v-list-item>
                     <v-list-item>
                       <v-sheet width="100%">
                         Initially the bucket{{ problem.size.length > 1 ? 's are': ' is' }} filled with amount of 
                         <template v-for="f,i in problem.filled">
                           <v-chip label :key="`bucket-filled-${i}`" class="ma-2" :color="getColor(i+1+problem.size.length)">
-                            <span class="pr-2" style="font-size: smaller;">({{ i+1 }})</span><span class="pr-2">{{ f }}</span><v-icon @click="param_dialog.editFilled=i">mdi-pencil</v-icon>
+                            <span class="pr-2" style="font-size: smaller;">({{ i+1 }})</span><span class="pr-2">{{ f }}</span><v-icon @click="editInitialFill(i)">mdi-pencil</v-icon>
                           </v-chip>
                           {{ (i < problem.filled.length - 1) ? (i == problem.filled.length - 2) ? ", and" : ", " : ""  }}
                         </template>.
                       </v-sheet>
                     </v-list-item>
                     <v-list-item>
-                      <v-text-field :label="param_dialog.editFilled < 0 ? `click filled amount to edit` : `filled amount for bucket ${param_dialog.editFilled + 1}`" @keydown.enter=""></v-text-field>
+                      <v-text-field ref="editFillBox" 
+                        v-model="param_dialog.edit_filled_value" 
+                        :label="problem.filled.length > 0 ? param_dialog.edit_filled < 0 ? `click filled amount to edit` : `initial filled amount for bucket ${param_dialog.edit_filled + 1} (size = ${problem.size[param_dialog.edit_filled]})` : 'create bucket before define their initial fill'" 
+                        @keydown.enter="updateInitialFill" 
+                        :error="param_dialog.edit_filled_err.length > 0"
+                        :error-messages="param_dialog.edit_filled_err"
+                        @focus="param_dialog.edit_filled_err = []"
+                      ></v-text-field>
                     </v-list-item>
                     <v-list-item>
                       <v-sheet width="100%">

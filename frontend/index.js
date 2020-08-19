@@ -48,7 +48,10 @@ let vm = new Vue({
         "#fddaec",
         "#f2f2f2"
       ],
-      editFilled: -1
+      new_bucket_size: "",
+      edit_filled: -1,
+      edit_filled_value: "",
+      edit_filled_err: []
     }
   },
   computed: {
@@ -162,16 +165,40 @@ let vm = new Vue({
     addToLogs: function (l) { if (this.log_enabler) { this.logs.push(l); } },
     showLogMsg: function (idx) { this.log_msg_dialog.index = idx; this.log_msg_dialog.show = true; },
     getColor: function (idx) { return this.param_dialog.colors[idx%this.param_dialog.colors.length]; },
-    addNewBucket: function (ev) { 
-      if (!isNaN(ev.target.value)) {
-        this.problem.size.push(Number(ev.target.value));
+    addNewBucket: function () { 
+      if (!isNaN(this.param_dialog.new_bucket_size)) {
+        this.problem.size.push(Number(this.param_dialog.new_bucket_size));
         this.problem.filled.push(0);
       }
-      ev.target.value = "";
+      this.param_dialog.new_bucket_size = "";
     },
     removeBucket: function (idx) { 
       this.problem.size.splice(idx,1); 
       this.problem.filled.splice(idx,1); 
     },
+    editInitialFill: function (idx) {
+      this.param_dialog.edit_filled = idx;
+      this.param_dialog.edit_filled_value = this.problem.filled[idx];
+      this.$refs.editFillBox.focus();
+    },
+    updateInitialFill: function () {
+      if (
+        !isNaN(this.param_dialog.edit_filled_value) 
+        && this.param_dialog.edit_filled > -1
+        && Number(this.param_dialog.edit_filled_value) <= this.problem.size[this.param_dialog.edit_filled]
+      ) {
+        this.problem.filled.splice(this.param_dialog.edit_filled, 1, Number(this.param_dialog.edit_filled_value));
+        this.param_dialog.edit_filled_value = "";
+        this.param_dialog.edit_filled = -1;
+      } else {
+        if (isNaN(this.param_dialog.edit_filled_value)) { this.param_dialog.edit_filled_err.push(`${this.param_dialog.edit_filled_value} is not a number`) }
+        else if (Number(this.param_dialog.edit_filled_value) > this.problem.size[this.param_dialog.edit_filled]) { this.param_dialog.edit_filled_err.push(`${this.param_dialog.edit_filled_value} is more than the size of the bucket (${this.problem.size[this.param_dialog.edit_filled]})`) }        
+        else {
+          this.param_dialog.edit_filled_value = "";
+          this.param_dialog.edit_filled = -1;
+        }
+      }
+      this.$refs.editFillBox.blur();
+    }
   }
 });
