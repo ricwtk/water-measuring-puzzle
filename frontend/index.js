@@ -31,27 +31,32 @@ let vm = new Vue({
       path: [],
       search_tree: []
     },
+    colors: [
+      "#fbb4ae",
+      "#b3cde3",
+      "#ccebc5",
+      "#decbe4",
+      "#fed9a6",
+      "#ffffcc",
+      "#e5d8bd",
+      "#fddaec",
+      "#f2f2f2"
+    ],
     log_msg_dialog: {
       show: false,
       index: 0
     },
     param_dialog: {
       show: false,
-      colors: [
-        "#fbb4ae",
-        "#b3cde3",
-        "#ccebc5",
-        "#decbe4",
-        "#fed9a6",
-        "#ffffcc",
-        "#e5d8bd",
-        "#fddaec",
-        "#f2f2f2"
-      ],
       new_bucket_size: "",
       edit_filled: -1,
       edit_filled_value: "",
-      edit_filled_err: []
+      edit_filled_err: [],
+      crand: 0
+    },
+    profile_dialog: {
+      show: false,
+      crand: 0
     }
   },
   computed: {
@@ -85,6 +90,8 @@ let vm = new Vue({
     }
   },
   mounted: function () {
+    this.param_dialog.crand = Math.round(Math.random()*this.colors.length);
+    this.profile_dialog.crand = Math.round(Math.random()*this.colors.length);
     let req = new Request("./get-player-list");
     fetch(req)
     .then(r => r.json())
@@ -164,7 +171,7 @@ let vm = new Vue({
     },
     addToLogs: function (l) { if (this.log_enabler) { this.logs.push(l); } },
     showLogMsg: function (idx) { this.log_msg_dialog.index = idx; this.log_msg_dialog.show = true; },
-    getColor: function (idx) { return this.param_dialog.colors[idx%this.param_dialog.colors.length]; },
+    getColor: function (idx) { return this.colors[idx%this.colors.length]; },
     addNewBucket: function () { 
       if (!isNaN(this.param_dialog.new_bucket_size)) {
         this.problem.size.push(Number(this.param_dialog.new_bucket_size));

@@ -25,7 +25,7 @@
                   <v-card-text class="flex-grow-1 overflow-auto d-flex flex-column" style="height:0pt">
                     <v-combobox class="flex-grow-0" label="Player" :items="player_list" v-model="player" :rules="[checkSelectedPlayer]">
                       <template v-slot:prepend>
-                        <v-btn icon tile title="Player profile"><v-icon>{{ player_icon_display }}</v-icon></v-btn>
+                        <v-btn icon tile title="Player profile" @click="profile_dialog.show = player.text == player_obj.name"><v-icon>{{ player_icon_display }}</v-icon></v-btn>
                       </template>
                       <template v-slot:append-outer>
                         <v-btn outlined @click="runPlayer" :disabled="player.value == ''">run</v-btn>
@@ -118,7 +118,7 @@
                 </v-row>
               </v-card>
             </v-dialog>
-            <v-dialog v-model="param_dialog.show">
+            <v-dialog v-model="param_dialog.show" scrollable>
               <v-card>
                 <v-card-title>Problem parameters</v-card-title>
                 <v-divider></v-divider>
@@ -126,9 +126,9 @@
                   <v-list>
                     <v-list-item>
                       <v-sheet width="100%">
-                        You have <v-chip label class="mx-2" :color="getColor(0)">{{ problem.size.length }}</v-chip> bucket{{ problem.size.length > 1 ? 's': '' }} of size 
+                        You have <v-chip label class="mx-2" :color="getColor(param_dialog.crand+0)">{{ problem.size.length }}</v-chip> bucket{{ problem.size.length > 1 ? 's': '' }} of size 
                         <template v-for="b,i in problem.size">
-                          <v-chip label :key="`bucket-size-${i}`" class="ma-2" :color="getColor(i+1)">
+                          <v-chip label :key="`bucket-size-${i}`" class="ma-2" :color="getColor(param_dialog.crand+i+1)">
                             <span class="pr-2" style="font-size: smaller;">({{ i+1 }})</span><span class="pr-2">{{ b }}</span><v-icon @click="removeBucket(i)">mdi-close</v-icon>
                           </v-chip>
                           {{ (i < problem.size.length - 1) ? (i == problem.size.length - 2) ? ", and" : ", " : ""  }}
@@ -142,7 +142,7 @@
                       <v-sheet width="100%">
                         Initially the bucket{{ problem.size.length > 1 ? 's are': ' is' }} filled with amount of 
                         <template v-for="f,i in problem.filled">
-                          <v-chip label :key="`bucket-filled-${i}`" class="ma-2" :color="getColor(i+1+problem.size.length)">
+                          <v-chip label :key="`bucket-filled-${i}`" class="ma-2" :color="getColor(param_dialog.crand+i+1+problem.size.length)">
                             <span class="pr-2" style="font-size: smaller;">({{ i+1 }})</span><span class="pr-2">{{ f }}</span><v-icon @click="editInitialFill(i)">mdi-pencil</v-icon>
                           </v-chip>
                           {{ (i < problem.filled.length - 1) ? (i == problem.filled.length - 2) ? ", and" : ", " : ""  }}
@@ -162,7 +162,7 @@
                     <v-list-item>
                       <v-sheet width="100%">
                         Water source (unlimited) is 
-                        <v-chip label class="ma-2" :color="getColor(2*problem.size.length+2)">
+                        <v-chip label class="ma-2" :color="getColor(param_dialog.crand+2*problem.size.length+2)">
                           <span class="pr-2">{{ problem.source ? '' : 'not ' }} available</span>
                           <v-icon @click="problem.source=!problem.source">{{ problem.source ? "mdi-toggle-switch" : "mdi-toggle-switch-off-outline" }}</v-icon>
                         </v-chip>
@@ -171,13 +171,46 @@
                     <v-list-item>
                       <v-sheet width="100%">
                         Water sink (unlimited) is 
-                        <v-chip label class="ma-2" :color="getColor(2*problem.size.length+3)">
+                        <v-chip label class="ma-2" :color="getColor(param_dialog.crand+2*problem.size.length+3)">
                           <span class="pr-2">{{ problem.sink ? '' : 'not ' }} available</span>
                           <v-icon @click="problem.sink=!problem.sink">{{ problem.sink ? "mdi-toggle-switch" : "mdi-toggle-switch-off-outline" }}</v-icon>
                         </v-chip>
                       </v-sheet>
                     </v-list-item>
                   </v-list>
+                </v-card-text>
+              </v-card>
+            </v-dialog>
+            <v-dialog v-model="profile_dialog.show" scrollable>
+              <v-card>
+                <v-card-title>Player profile</v-card-title>
+                <v-divider></v-divider>
+                <v-card-text v-if="player_obj.name == player.text">
+                  <v-row v-if="player_obj.err">
+                    <v-col><v-alert type="error" width="100%">{{ player_obj.err }}</v-alert></v-col>
+                  </v-row>
+                  <v-row no-gutters class="mt-3"><v-col class="subheader">Name</v-col></v-row>
+                  <v-row no-gutters><v-col><v-chip label :color="getColor(profile_dialog.crand+0)">{{ player_obj.name }}</v-chip></v-col></v-row>
+                  <v-row no-gutters class="mt-3"><v-col class="subheader">Icon</v-col></v-row>
+                  <v-row no-gutters>
+                    <v-chip label :color="getColor(profile_dialog.crand+1)">
+                      <span class="pr-2"><v-icon>{{ player_obj.icon }}</v-icon></span>
+                      {{ player_obj.icon }}
+                    </v-chip>
+                  </v-row>
+                  <v-row no-gutters class="mt-3"><v-col class="subheader">Folder</v-col></v-row>
+                  <v-row no-gutters><v-col><v-chip label :color="getColor(profile_dialog.crand+2)">{{ player_obj.folder }}</v-chip></v-col></v-row>
+                  <v-row no-gutters class="mt-3"><v-col class="subheader">Group</v-col></v-row>
+                  <v-row no-gutters><v-col><v-chip label :color="getColor(profile_dialog.crand+3)">{{ player_obj.group }}</v-chip></v-col></v-row>
+                  <v-row no-gutters class="mt-3"><v-col class="subheader" cols="auto">Informed Search</v-col></v-row>
+                  <v-row no-gutters>
+                    <v-chip label :color="getColor(profile_dialog.crand+4)">
+                      <span class="pr-2"><v-icon>{{ player_obj.informed ? 'mdi-check' : 'mdi-close' }}</v-icon></span>
+                      {{ player_obj.informed ? 'Informed' : 'Uninformed' }}
+                    </v-chip>
+                  </v-row>
+                  <v-row no-gutters class="mt-3"><v-col class="subheader">Members</v-col></v-row>
+                  <v-row no-gutters><v-col><v-chip label :color="getColor(profile_dialog.crand+5+mi)" v-for="m,mi in player_obj.members" :key="`member-${mi}`" class="mr-2 mb-2"><span class="pr-1">{{ m[0] }}</span><span>{{ m[1] }}</span></v-chip></v-col></v-row>
                 </v-card-text>
               </v-card>
             </v-dialog>
