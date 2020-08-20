@@ -120,6 +120,39 @@ Vue.component('search-tree', {
   }
 });
 
+Vue.component("buckets", {
+  template: "#buckets-template",
+  props: {
+    width: {
+      type: String,
+      default: "100%"
+    },
+    height: {
+      type: String,
+      default: "100%"
+    },
+    size: {
+      type: Array,
+      default: [8,5,3]
+    },
+    filled: {
+      type: Array,
+      default: [0,0,0]
+    },
+    source: {
+      type: Boolean,
+      default: true
+    },
+    sink: {
+      type: Boolean,
+      default: true
+    }
+  },
+  data: function () {
+    return {}
+  }
+})
+
 let vm = new Vue({
   el: "#app",
   vuetify: new Vuetify(),
@@ -149,6 +182,7 @@ let vm = new Vue({
       target: 4
     },
     searching: false,
+    buckets_display_index: 0,
     result: {
       path: [],
       search_tree: []
