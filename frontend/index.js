@@ -120,6 +120,60 @@ Vue.component('search-tree', {
   }
 });
 
+Vue.component("tap", {
+  template: "#tap-template",
+  props: {
+    width: {
+      type: String,
+      default: "50"
+    },
+    x: {
+      type: String,
+      default: "0"
+    },
+    y: {
+      type: String,
+      default: "0"
+    }
+  }
+});
+
+Vue.component("drain", {
+  template: "#drain-template",
+  props: {
+    width: {
+      type: String,
+      default: "50"
+    },
+    x: {
+      type: String,
+      default: "0"
+    },
+    y: {
+      type: String,
+      default: "0"
+    }
+  }
+});
+
+Vue.component("bucket", {
+  template: "#bucket-template",
+  props: {
+    width: {
+      type: String,
+      default: "50"
+    },
+    x: {
+      type: String,
+      default: "0"
+    },
+    y: {
+      type: String,
+      default: "0"
+    }
+  }
+});
+
 Vue.component("buckets", {
   template: "#buckets-template",
   props: {
@@ -151,7 +205,7 @@ Vue.component("buckets", {
   data: function () {
     return {}
   }
-})
+});
 
 let vm = new Vue({
   el: "#app",
