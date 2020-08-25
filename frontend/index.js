@@ -159,10 +159,6 @@ Vue.component("drain", {
 Vue.component("bucket", {
   template: "#bucket-template",
   props: {
-    width: {
-      type: String,
-      default: "50"
-    },
     x: {
       type: String,
       default: "0"
@@ -170,7 +166,33 @@ Vue.component("bucket", {
     y: {
       type: String,
       default: "0"
+    },
+    filledRatio: { // as ratio of the size
+      type: Number,
+      default: 1
+    },
+    dimension: {
+      type: Object,
+      default: () => ({
+        w: 300,
+        h: 300,
+        left_partial: 175,
+        right_partial: 50,
+        top_height: 30
+      })
     }
+  },
+  data: function () {
+    return { }
+  },
+  computed: {
+    height: function () { return this.dimension.height; },
+    width: function () { return this.dimension.width; },
+    w: function () { return this.dimension.w; },
+    h: function () { return this.dimension.h; },
+    left_partial: function () { return this.dimension.left_partial; },
+    right_partial: function () { return this.dimension.right_partial; },
+    top_height: function () { return this.dimension.top_height; },
   }
 });
 
@@ -203,7 +225,45 @@ Vue.component("buckets", {
     }
   },
   data: function () {
-    return {}
+    return {
+      bucket: {
+        firstx: 200,
+        sep: 50,
+        max: {
+          w: 300,
+          h: 300,
+          left_partial: 175,
+          right_partial: 50,
+          top_height: 30,
+          y: 200
+        }
+      }
+    }
+  },
+  computed: {
+    max_bucket: function () { return Math.max(...this.size); },
+    buckets_dim: function () {
+      let maxA = this.bucket.max.w * this.bucket.max.h;
+      return this.size.map((v) => {
+        let size_ratio = v / this.max_bucket;
+        let delA = maxA * ( 1 - size_ratio );
+        let w = this.bucket.max.w - delA / 2 / this.bucket.max.h;
+        let h = this.bucket.max.h - this.bucket.max.h * delA / ( 2 * this.bucket.max.h * this.bucket.max.w - delA );
+        let left_partial = this.bucket.max.left_partial / this.bucket.max.w * w;
+        let right_partial = this.bucket.max.right_partial / this.bucket.max.w * w;
+        let top_height = this.bucket.max.top_height / this.bucket.max.h * h;
+        return {
+          height: 10+10+top_height+10+10+h+10+10,
+          width: 10+10+w+10+10,
+          w: w,
+          h: h,
+          left_partial: left_partial,
+          right_partial: right_partial,
+          top_height: top_height,
+          y: this.bucket.max.y + this.bucket.max.h - h
+        };
+      });
+    }
   }
 });
 
