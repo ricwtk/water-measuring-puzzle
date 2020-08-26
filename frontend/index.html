@@ -444,12 +444,13 @@
         c-10 0,-10 0,-10 -10
         v-${h}z`
         "/>
-        <path id="water-body" :d="`M10,10m0,10m0,${top_height}m0,10m0,10m10,0
-        v${h}
+        <path v-if="filled_h > 0" id="water-body" :d="`M10,10m0,10m0,${top_height}m0,10m0,10m10,0
+        m0,${h-filled_h}
+        v${filled_h}
         c0 10,0 10,10 10
         h${w-40}
         c10 0,10 0,10 -10
-        v-${h}
+        v-${filled_h}
         z`
         " fill="#42A5F5"/>
       </svg>

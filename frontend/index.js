@@ -178,7 +178,8 @@ Vue.component("bucket", {
         h: 300,
         left_partial: 175,
         right_partial: 50,
-        top_height: 30
+        top_height: 30,
+        filled_h: 300
       })
     }
   },
@@ -193,6 +194,7 @@ Vue.component("bucket", {
     left_partial: function () { return this.dimension.left_partial; },
     right_partial: function () { return this.dimension.right_partial; },
     top_height: function () { return this.dimension.top_height; },
+    filled_h: function () { return this.dimension.filled_h; },
   }
 });
 
@@ -247,7 +249,7 @@ Vue.component("buckets", {
     max_bucket: function () { return Math.max(...this.size); },
     buckets_dim: function () {
       let maxA = this.bucket.max.w * this.bucket.max.h;
-      let buckets = this.size.map((v) => {
+      let buckets = this.size.map((v,i) => {
         let size_ratio = v / this.max_bucket;
         let delA = maxA * ( 1 - size_ratio );
         let w = this.bucket.max.w - delA / 2 / this.bucket.max.h;
@@ -262,6 +264,7 @@ Vue.component("buckets", {
           width: width,
           w: w,
           h: h,
+          filled_h: this.filled[i]/v * h,
           left_partial: left_partial,
           right_partial: right_partial,
           top_height: top_height,
