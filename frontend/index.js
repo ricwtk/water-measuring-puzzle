@@ -213,7 +213,7 @@ Vue.component("buckets", {
       type: Array,
       default: [8,5,3]
     },
-    filled: {
+    realFilled: {
       type: Array,
       default: [0,0,0]
     },
@@ -228,6 +228,9 @@ Vue.component("buckets", {
   },
   data: function () {
     return {
+      filled: [0,0,0],
+      display_filled: true,
+      filled_animate_timeout: undefined,
       tap: {
         width: 200,
         x: 0,
@@ -282,6 +285,22 @@ Vue.component("buckets", {
       drn.x = this.tap.x + this.tap.width + this.buckets_dim.reduce((a,v) => a + v.width + this.bucket.sep, 0);
       drn.y = this.tap.y + this.tap.width + Math.max(...this.buckets_dim.map(d => d.height)) - drn.width / 2;
       return drn;
+    }
+  },
+  watch: {
+    realFilled: function (newV, oldV) {
+      if (typeof this.filled_animate_timeout === 'number') { 
+        clearTimeout(this.filled_animate_timeout); 
+        oldV = this.filled;
+      }
+      let steps = oldV.map((v,i) => (newV[i] - v)/10);
+      this.display_filled = false;
+      let tofcn = () => {
+        this.filled = this.filled.map( (f,i) => steps[i] > 0 ? Math.min(newV[i], f+steps[i]) : Math.max(newV[i], f+steps[i]) );
+        if (!this.filled.every((f,i) => f == newV[i])) { this.filled_animate_timeout = setTimeout(tofcn, 200); }
+        else { this.display_filled = true; }
+      };
+      tofcn();
     }
   }
 });

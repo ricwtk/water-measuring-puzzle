@@ -37,7 +37,7 @@
                     <v-row>
                       <buckets width="100%" height="100%" 
                         :size="problem.size" 
-                        :filled="buckets_display_index > -1 && buckets_display_index < result.path.length ? result.path[buckets_display_index] : problem.filled" 
+                        :real-filled="buckets_display_index > -1 && buckets_display_index < result.path.length ? result.path[buckets_display_index] : problem.filled" 
                         :source="problem.source" 
                         :sink="problem.sink"
                       ></buckets>
@@ -454,7 +454,7 @@
         <tap v-if="source" :width="`${tap.width}`" :x="`${tap.x}`" :y="`${tap.y}`"></tap>
         <bucket v-for="d,i in buckets_dim" :x="`${d.x}`" :y="`${d.y}`" :dimension="d" :key="`bucket-${i}`"></bucket>
         <text v-for="s,i in size" :key="`size-${i}`" text-anchor="middle" dominant-baseline="hanging" :x="buckets_dim[i].x+buckets_dim[i].width/2" :y="buckets_dim[i].y+buckets_dim[i].height" class="size-label">{{ s }}</text>
-        <text v-for="f,i in filled" :key="`filled-${i}`" text-anchor="middle" dominant-baseline="baseline" :x="buckets_dim[i].x+buckets_dim[i].width/2" :y="buckets_dim[i].y+buckets_dim[i].height-15" class="filled-label">{{ f }}</text>
+        <text v-if="display_filled" v-for="f,i in filled" :key="`filled-${i}`" text-anchor="middle" dominant-baseline="baseline" :x="buckets_dim[i].x+buckets_dim[i].width/2" :y="buckets_dim[i].y+buckets_dim[i].height-15" class="filled-label">{{ f }}</text>
         <drain v-if="sink" :width="`${drain.width}`" :x="`${drain.x}`" :y="`${drain.y}`"></drain>
       </svg>
     </template>
