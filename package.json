@@ -1,0 +1,23 @@
+{
+  "name": "water-measuring-puzzle",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "docs:dev": "vuepress dev docs-vuepress",
+    "docs:build": "vuepress build docs-vuepress"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ricwtk/water-measuring-puzzle.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ricwtk/water-measuring-puzzle/issues"
+  },
+  "homepage": "https://github.com/ricwtk/water-measuring-puzzle#readme",
+  "devDependencies": {
+    "vuepress": "^1.5.4"
+  }
+}
