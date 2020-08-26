@@ -395,6 +395,15 @@ let vm = new Vue({
       }
     }
   },
+  watch: {
+    problem: {
+      handler: function () {
+        this.result.path = [];
+        this.result.search_tree = [];
+      },
+      deep: true
+    }
+  },
   mounted: function () {
     this.param_dialog.crand = Math.round(Math.random()*this.colors.length);
     this.profile_dialog.crand = Math.round(Math.random()*this.colors.length);
