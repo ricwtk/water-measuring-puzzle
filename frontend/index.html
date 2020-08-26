@@ -46,7 +46,7 @@
                     <v-row class="flex-grow-0 align-center" no-gutters>
                       <v-col class="text-center">
                         <template v-for="p,i in result.path">
-                          <v-chip :key="`path-${i}`" class="mx-2 my-1" :color="buckets_display_index == i ? 'green' : ''" :class="{ 'white--text': buckets_display_index == i }">{{ p.join(" &middot ") }}</v-chip>
+                          <v-chip @click="buckets_display_index = i" :key="`path-${i}`" class="mx-2 my-1" :color="buckets_display_index == i ? 'green' : ''" :class="{ 'white--text': buckets_display_index == i }">{{ p.join(" &middot ") }}</v-chip>
                           <template v-if="i < result.path.length-1">&rarr;</template>
                         </template>
                       </v-col>
