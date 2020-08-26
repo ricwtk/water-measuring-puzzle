@@ -341,7 +341,9 @@ let vm = new Vue({
       edit_filled: -1,
       edit_filled_value: "",
       edit_filled_err: [],
-      crand: 0
+      crand: 0,
+      edit_target_value: "",
+      edit_target_err: [],
     },
     profile_dialog: {
       show: false,
@@ -524,6 +526,22 @@ let vm = new Vue({
         }
       }
       this.$refs.editFillBox.blur();
+    },
+    updateTarget: function () {
+      if (
+        !isNaN(this.param_dialog.edit_target_value) 
+        && Number(this.param_dialog.edit_target_value) <= Math.max(...this.problem.size)
+      ) {
+        this.problem.target = Number(this.param_dialog.edit_target_value);
+        this.param_dialog.edit_target_value = "";
+      } else {
+        if (isNaN(this.param_dialog.edit_target_value)) { this.param_dialog.edit_target_err.push(`${this.param_dialog.edit_target_value} is not a number`) }
+        else if (Number(this.param_dialog.edit_target_value) > Math.max(...this.problem.size)) { this.param_dialog.edit_target_err.push(`${this.param_dialog.edit_target_value} is more than the largest bucket (${Math.max(...this.problem.size)})`) }
+        else {
+          this.param_dialog.edit_target_value = "";
+        }
+      }
+      this.$refs.editTargetBox.blur();
     }
   }
 });

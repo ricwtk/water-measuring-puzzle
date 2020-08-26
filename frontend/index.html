@@ -155,6 +155,24 @@
                         </v-chip>
                       </v-sheet>
                     </v-list-item>
+                    <v-list-item>
+                      <v-sheet width="100%">
+                        The aim is to get a bucket filled with water of amount
+                        <v-chip label class="ma-2" :color="getColor(param_dialog.crand+2*problem.size.length+4)">
+                          <span>{{ problem.target }}</span>
+                        </v-chip>.
+                      </v-sheet>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-text-field ref="editTargetBox" 
+                        v-model="param_dialog.edit_target_value" 
+                        label="Edit target value" 
+                        @keydown.enter="updateTarget" 
+                        :error="param_dialog.edit_target_err.length > 0"
+                        :error-messages="param_dialog.edit_target_err"
+                        @focus="param_dialog.edit_target_err = []"
+                      ></v-text-field>
+                    </v-list-item>
                   </v-list>
                 </v-card-text>
               </v-card>
