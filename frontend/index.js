@@ -240,9 +240,6 @@ Vue.component("buckets", {
           right_partial: 50,
           top_height: 30,
         }
-      },
-      drain: {
-        width: 150,
       }
     }
   },
@@ -250,7 +247,7 @@ Vue.component("buckets", {
     max_bucket: function () { return Math.max(...this.size); },
     buckets_dim: function () {
       let maxA = this.bucket.max.w * this.bucket.max.h;
-      return this.size.map((v) => {
+      let buckets = this.size.map((v) => {
         let size_ratio = v / this.max_bucket;
         let delA = maxA * ( 1 - size_ratio );
         let w = this.bucket.max.w - delA / 2 / this.bucket.max.h;
@@ -271,6 +268,17 @@ Vue.component("buckets", {
           y: this.tap.width + this.bucket.max.h - h + this.bucket.max.top_height - top_height
         };
       });
+      buckets = buckets.map((b,i) => {
+        b.x = this.tap.x + this.tap.width + buckets.slice(0,i).reduce((a,v)=>a + v.width + this.bucket.sep, 0);
+        return b;
+      });
+      return buckets;
+    },
+    drain: function () {
+      let drn = { width: 150 };
+      drn.x = this.tap.x + this.tap.width + this.buckets_dim.reduce((a,v) => a + v.width + this.bucket.sep, 0);
+      drn.y = this.tap.y + this.tap.width + Math.max(...this.buckets_dim.map(d => d.height)) - drn.width / 2;
+      return drn;
     }
   }
 });
