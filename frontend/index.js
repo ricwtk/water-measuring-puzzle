@@ -226,8 +226,12 @@ Vue.component("buckets", {
   },
   data: function () {
     return {
+      tap: {
+        width: 200,
+        x: 0,
+        y: 0
+      },
       bucket: {
-        firstx: 200,
         sep: 50,
         max: {
           w: 300,
@@ -235,8 +239,10 @@ Vue.component("buckets", {
           left_partial: 175,
           right_partial: 50,
           top_height: 30,
-          y: 200
         }
+      },
+      drain: {
+        width: 150,
       }
     }
   },
@@ -252,15 +258,17 @@ Vue.component("buckets", {
         let left_partial = this.bucket.max.left_partial / this.bucket.max.w * w;
         let right_partial = this.bucket.max.right_partial / this.bucket.max.w * w;
         let top_height = this.bucket.max.top_height / this.bucket.max.h * h;
+        let height = 10+10+top_height+10+10+h+10+10;
+        let width = 10+10+w+10+10;
         return {
-          height: 10+10+top_height+10+10+h+10+10,
-          width: 10+10+w+10+10,
+          height: height,
+          width: width,
           w: w,
           h: h,
           left_partial: left_partial,
           right_partial: right_partial,
           top_height: top_height,
-          y: this.bucket.max.y + this.bucket.max.h - h
+          y: this.tap.width + this.bucket.max.h - h + this.bucket.max.top_height - top_height
         };
       });
     }

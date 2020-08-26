@@ -457,11 +457,9 @@
 
     <template id="buckets-template">
       <svg viewBox="0 0 1500 500" :style="{ width: `${width}`, height: `${height}` }">
-        <tap width="200" x="0" y="0"></tap>
-        <drain width="150" x="500" y="0"></drain>
-        <bucket v-for="d,i in buckets_dim" :x="`${bucket.firstx+buckets_dim.slice(0,i).reduce((acc,val)=>{ return acc + val.width + bucket.sep; },0) }`" :y="`${d.y}`" :dimension="d" :key="`bucket-${i}`"></bucket>
-        <!-- <bucket width="350" x="550" y="200"></bucket>
-        <bucket width="350" x="900" y="200"></bucket> -->
+        <tap :width="`${tap.width}`" :x="`${tap.x}`" :y="`${tap.y}`"></tap>
+        <bucket v-for="d,i in buckets_dim" :x="`${tap.x+tap.width+buckets_dim.slice(0,i).reduce((a,v)=>a + v.width + bucket.sep, 0) }`" :y="`${d.y}`" :dimension="d" :key="`bucket-${i}`"></bucket>
+        <drain :width="`${drain.width}`" :x="`${tap.x+tap.width+buckets_dim.reduce((a,v)=>a + v.width + bucket.sep, 0)}`" :y="`${Math.max(...buckets_dim.map(d=>d.height))+tap.width-drain.width/2}`"></drain>
       </svg>
     </template>
 
