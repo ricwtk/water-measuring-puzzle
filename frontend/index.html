@@ -458,10 +458,10 @@
     <template id="buckets-template">
       <svg :view-box.camel="`${tap.x-10} ${tap.y-10} ${drain.x+drain.width+10+10} ${drain.y+drain.width+10+10}`" :width="width" :height="height" min-height="100px">
         <svg:style>.size-label { font-size: {{ bucket.max.w*0.2 }}px }</svg:style>
-        <tap :width="`${tap.width}`" :x="`${tap.x}`" :y="`${tap.y}`"></tap>
+        <tap v-if="source" :width="`${tap.width}`" :x="`${tap.x}`" :y="`${tap.y}`"></tap>
         <bucket v-for="d,i in buckets_dim" :x="`${d.x}`" :y="`${d.y}`" :dimension="d" :key="`bucket-${i}`"></bucket>
         <text v-for="s,i in size" :key="`size-${i}`" text-anchor="middle" dominant-baseline="hanging" :x="buckets_dim[i].x+buckets_dim[i].width/2" :y="buckets_dim[i].y+buckets_dim[i].height" class="size-label">{{ s }}</text>
-        <drain :width="`${drain.width}`" :x="`${drain.x}`" :y="`${drain.y}`"></drain>
+        <drain v-if="sink" :width="`${drain.width}`" :x="`${drain.x}`" :y="`${drain.y}`"></drain>
       </svg>
     </template>
 
