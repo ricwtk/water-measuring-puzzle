@@ -47,7 +47,7 @@
                         <v-btn tile icon @click="buckets_display_index=Math.max(0, buckets_display_index-1)"><v-icon>mdi-menu-left-outline</v-icon></v-btn>
                       </template>
                       <template v-slot:append>
-                        <v-btn tile icon @click="buckets_display_index=Math.min(result.path.length, buckets_display_index+1)"><v-icon>mdi-menu-right-outline</v-icon></v-btn>
+                        <v-btn tile icon @click="buckets_display_index=Math.min(result.path.length-1, buckets_display_index+1)"><v-icon>mdi-menu-right-outline</v-icon></v-btn>
                       </template>
                     </v-slider>
                     <v-row class="flex-grow-0 align-center" no-gutters>
