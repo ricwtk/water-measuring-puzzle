@@ -34,14 +34,14 @@
                         <v-icon class="pr-3">{{ item.text == "" ? default_val.player_icon : item.icon }}</v-icon>{{ item.text }}
                       </template>
                     </v-combobox>
-                    <v-row>
+                    <!-- <v-row> -->
                       <buckets width="100%" height="100%" 
                         :size="problem.size" 
                         :real-filled="buckets_display_index > -1 && buckets_display_index < result.path.length ? result.path[buckets_display_index] : problem.filled" 
                         :source="problem.source" 
                         :sink="problem.sink"
                       ></buckets>
-                    </v-row>
+                    <!-- </v-row> -->
                     <v-slider v-if="result.path.length > 0" min="0" :max="result.path.length - 1" class="px-2 flex-grow-0 align-center" hide-details v-model="buckets_display_index" ticks="always" tick-size="5">
                       <template v-slot:prepend>
                         <v-btn tile icon @click="buckets_display_index=Math.max(0, buckets_display_index-1)"><v-icon>mdi-menu-left-outline</v-icon></v-btn>
