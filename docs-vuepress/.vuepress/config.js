@@ -7,8 +7,8 @@ module.exports = {
     sidebarDepth: 2,
     sidebar: [
       '/',
-      // 'problem',
-      // 'instructions',
+      'problem',
+      'instructions',
       // 'player',
       // 'test-environment',
       // 'loading-code',
