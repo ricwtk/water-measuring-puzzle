@@ -9,7 +9,7 @@ tagline: Artificial Intelligence 2020-08
 
 Group of maximum 5 members
 
-Submit your group name, icon (from [here](https://cdn.materialdesignicons.com/5.0.45/)), and members on [Teams]().
+Submit your group name, icon (from [here](https://cdn.materialdesignicons.com/5.0.45/)), and members on [Teams](https://teams.microsoft.com/l/channel/19%3Ac09eedf43c844881a61ef880357a8a1d%40thread.tacv2/tab%3A%3A97720b8b-f199-42d6-ae02-8185aa519d62?groupId=5aa2d045-bf5b-45fb-a293-17be3e093743&tenantId=537c2be1-fcd4-45a9-83b3-6653eacc5070).
 
 
 ## Submission
