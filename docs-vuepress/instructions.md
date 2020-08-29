@@ -34,7 +34,9 @@ class Player():
     return path, search_tree
 ```
 
-**Note the indentation**
+**Note the indentation.**
+
+A `test` player has been created for your reference.
 
 ### Group information
 

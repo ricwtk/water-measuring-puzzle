@@ -41,5 +41,5 @@ A zip file and a report
 
 #### Report (.pdf)
 
-The report should include the problem description, the explanation of search algorithm implementation, a minimum of one case study, and evaluate two search algorithms. 
+The report should include the problem description, the explanation of search algorithm implementation, a minimum of one problem for case study, and evaluate two search algorithms. 
 
